@@ -1,7 +1,5 @@
 package ru.fazziclay.openvkindiscord;
 
-import ru.fazziclay.openvkindiscord.Config;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
@@ -13,10 +11,7 @@ public class Debugger {
             return;
         }
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss:SSS");
-        LocalDateTime now = LocalDateTime.now();
-
-        System.out.println(Color.RESET + "["+dtf.format(now)+"] [DEBUG] " + message);
+        Logger.info("[DEBUG] " + message);
     }
 
     public static int getRandom(int minimum, int maximum) {
@@ -50,11 +45,4 @@ public class Debugger {
     public void error(String message) {
         printDebugMessage(String.format(Color.RED + "[%s:%s.%s] [ERROR]: %s", fileName, functionName, random, message));
     }
-}
-
-class Color {
-    public static String RESET="\u001B[0m";
-    public static String RED="\u001B[31m";
-    public static String GREEN="\u001B[32m";
-    public static String YELLOW="\u001B[33m";
 }

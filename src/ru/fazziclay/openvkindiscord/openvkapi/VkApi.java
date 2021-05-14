@@ -1,12 +1,8 @@
 package ru.fazziclay.openvkindiscord.openvkapi;
 
-import org.json.JSONArray;
-import ru.fazziclay.openvkindiscord.Debugger;
 import ru.fazziclay.openvkindiscord.Utils;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
@@ -28,21 +24,24 @@ public class VkApi {
     }
 
     public String sendMessage(String recipientType, String recipientId, String message, String replyTo) {
-        String args = String.format("v=5.130&random_id=%s&%s_id=%s&message=%s&reply_to=%s", Utils.getRandom(0, 10000), recipientType, recipientId, message, replyTo);
+        String args = String.format("v=5.130&random_id=%s&%s_id=%s&message=%s&reply_to=%s", Utils.getRandom(0, 10000), recipientType, recipientId, message.replace(" ", "%20"), replyTo);
         return callRawMethod("messages.send", args);
     }
 
     // raw
     public String callRawMethod(String method, String args) {
-        try {
-            String url = "https://api.vk.com/method/" + method + "?access_token=" + this.token + "&" + args;
+        String url = "https://api.vk.com/method/" + method + "?access_token=" + this.token + "&" + args;
+        return callRawUrl(url);
+    }
 
+    public String callRawUrl(String url) {
+        try {
             InputStream inputStream = new URL(url).openStream();
             Scanner scanner = new Scanner(inputStream);
             return scanner.nextLine();
 
         } catch (Exception e) {
-            return "FAZZICLAY_ERROR:" + e.toString();
+            return "FAZZICLAY_ERROR:" + e;
         }
     }
 }

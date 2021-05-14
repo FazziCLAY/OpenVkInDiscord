@@ -1,32 +1,47 @@
 package ru.fazziclay.openvkindiscord;
 
-import org.json.JSONObject;
-import ru.fazziclay.openvkindiscord.openvkapi.VkApi;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.Arrays;
 
 public class OpenVkInDiscord {
-    public static JSONObject data;
-
     public static void main(String[] args) {
-        VkApi a = new VkApi("");
-        a.sendMessage("user", "408401600", "TestUser", "0");
-        a.sendMessage("chat", "91", "TestChat", "295803");
-
-        if (true) {
-            return;
-        }
+        Logger.info("Starting...");
+        Debugger debugger = new Debugger("OpenVkInDiscord", "main", Arrays.toString(args));
         try {
-            Debugger debugger = new Debugger("OpenVkInDiscord", "main");
-            debugger.log("Test Log");
-            debugger.error("Test error");
             Config.loadConfig();
             DiscordBot.loadDiscordBot();
             VkBot.loadVkBot();
-
-            data = new JSONObject(Utils.readFile("./data.json"));
+            OpenVkInDiscord.loadChannels();
 
         } catch (Exception e) {
-            Debugger.printDebugMessage("STARTING ERROR: JAVAERROR: " + e);
+            Logger.info("Starting error. JavaError: "+e);
+            debugger.log("Starting error! JavaError: "+e);
+            DiscordBot.bot.shutdownNow();
+            return;
+        }
+        Logger.info("Started!");
+    }
+
+    public static void loadChannels() {
+        Debugger debugger = new Debugger("OpenVkInDiscord", "loadChannels");
+        JSONArray channelsJson;
+        try {
+            channelsJson = new JSONArray(Utils.readFile("./data/channels.json"));
+
+        } catch (JSONException e) {
+            channelsJson = new JSONArray();
+            Utils.writeFile("./data/channels.json", channelsJson.toString(4));
         }
 
+        for (Object a : channelsJson) {
+            JSONArray channelJson = (JSONArray) a;
+            int dialogId = channelJson.getInt(0);
+            String discordId = channelJson.getString(1);
+            int type = channelJson.getInt(2);
+            Channel channel = new Channel(dialogId, discordId, type);
+            Channel.channels.add(channel);
+        }
     }
 }

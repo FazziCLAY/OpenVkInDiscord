@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="OpenVkInDiscord:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/OpenVkInDiscord_jar</output-path>
+    <root id="archive" name="OpenVkInDiscord.jar">
+      <element id="module-output" name="OpenVkInDiscord" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/JDA-4.2.0_168-withDependencies.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-20201115.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

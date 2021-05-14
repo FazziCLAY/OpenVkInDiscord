@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import org.json.JSONArray;
 
 import javax.security.auth.login.LoginException;
 
@@ -15,6 +14,7 @@ public class DiscordBot extends ListenerAdapter {
     public static JDA bot;
 
     public static void loadDiscordBot() throws LoginException, InterruptedException {
+        Debugger debugger = new Debugger("DiscordBot", "loadDiscordBot");
         bot = JDABuilder.createDefault(Config.discordToken)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
@@ -28,7 +28,21 @@ public class DiscordBot extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        JSONArray channels = OpenVkInDiscord.data.optJSONArray("channels");
+        Debugger debugger = new Debugger("DiscordBot", "onMessageReceived", event.toString());
+        debugger.log("message(raw)="+event.getMessage().getContentRaw());
 
+        if (event.getMessage().getAuthor().isBot() || !event.getChannelType().isGuild()) {
+            debugger.log("author is bot. returned");
+            return;
+        }
+
+        Channel channel = Channel.getChannelByDiscord(event.getChannel().getId());
+        if (channel == null) {
+            debugger.error("Channel is not equal in vk!");
+            event.getChannel().sendMessage("Channel not equal in vk!").queue();
+            return;
+        }
+
+        channel.sendToVk(event.getMessage().getContentRaw());
     }
 }
