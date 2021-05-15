@@ -15,11 +15,11 @@ public class VkApi {
 
 
     // messages.send
-    public String sendUserMessage(String userId, String message) {
+    public String sendUserMessage(int userId, String message) {
         return callRawMethod("messages.send", "v=5.130&random_id="+ Utils.getRandom(0, 10000) +"&user_id="+userId+"&message="+message);
     }
 
-    public String sendChatMessage(String chatId, String message) {
+    public String sendChatMessage(int chatId, String message) {
         return callRawMethod("messages.send", "v=5.130&random_id="+ Utils.getRandom(0, 10000) +"&chat_id="+chatId+"&message="+message);
     }
 

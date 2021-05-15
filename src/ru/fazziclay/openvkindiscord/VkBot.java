@@ -33,6 +33,18 @@ public class VkBot {
     }
 
     public static void onMessageReceived(LongPollEvent event) {
+        UniversalChannel universalChannel = UniversalChannel.getUniversalChannelByVk(event.peer_id);
+        if (universalChannel == null) {
+            DiscordBot.bot.getGuildById("751678172378169354").createTextChannel(String.valueOf(event.peer_id)).queue((discordChannel) -> {
+                Channel createdChannel = Channel.createChannel(event.peer_id-2000000000, discordChannel.getId(), 0);
+                createdChannel.sendToDiscord(event.text);
+            });
+        }
+
+        if (true) {
+            return;
+        }
+
         Debugger debugger = new Debugger("VkBot", "onMessageReceived", event.toString());
 
         int vkDialogType = 0;

@@ -68,10 +68,10 @@ public class Channel {
     public void sendToVk(String message) {
         this.debugger = new Debugger("Channel", "sendToDiscord");
         if (vkDialogType == 0) {
-            VkBot.vkApi.sendUserMessage(String.valueOf(vkDialogId), message);
+            VkBot.vkApi.sendUserMessage(vkDialogId, message);
         }
         if (vkDialogType == 1) {
-            VkBot.vkApi.sendChatMessage(String.valueOf(vkDialogId), message);
+            VkBot.vkApi.sendChatMessage(vkDialogId, message);
         }
     }
 
