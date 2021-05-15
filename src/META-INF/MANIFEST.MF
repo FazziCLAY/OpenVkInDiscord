@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: ru.fazziclay.openvkindiscord.OpenVkInDiscord
-
+Created-By: https://fazziclay.ru/
+Name: OpenVkInDiscord

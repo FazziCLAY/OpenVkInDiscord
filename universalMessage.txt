@@ -1,0 +1,17 @@
+package ru.fazziclay.openvkindiscord.universal;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class UniversalMessage {
+    //Static
+    static List<UniversalMessage> messages = new ArrayList<>();
+
+    // Object
+    public String vkId;
+    public String discordId;
+    public UniversalMessage(String vkId, String discordId) {
+        this.vkId = vkId;
+        this.discordId = discordId;
+    }
+}

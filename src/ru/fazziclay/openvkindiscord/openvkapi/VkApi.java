@@ -1,6 +1,9 @@
 package ru.fazziclay.openvkindiscord.openvkapi;
 
-import ru.fazziclay.openvkindiscord.Utils;
+import org.json.JSONObject;
+import ru.fazziclay.openvkindiscord.utils.Utils;
+import ru.fazziclay.openvkindiscord.openvkapi.longpoll.LongPollThread;
+import ru.fazziclay.openvkindiscord.openvkapi.longpoll.VkEventListener;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -8,9 +11,25 @@ import java.util.Scanner;
 
 public class VkApi {
     String token;
+    Thread longPollThread;
+
 
     public VkApi(String token) {
         this.token = token;
+    }
+
+    public VkApi addEventListeners(VkEventListener listener) {
+        String response = callRawMethod("messages.getLongPollServer", "v=5.130");
+        JSONObject responseJson = new JSONObject(response).getJSONObject("response");
+
+        LongPollThread.longPollServer   = responseJson.getString("server");
+        LongPollThread.longPollKey      = responseJson.getString("key");
+        LongPollThread.longPollTs       = responseJson.getInt("ts");
+        LongPollThread.eventListener    = listener;
+        LongPollThread.vkApi            = this;
+        longPollThread = new LongPollThread();
+        longPollThread.start();
+        return this;
     }
 
 
@@ -35,10 +54,15 @@ public class VkApi {
     }
 
     public String callRawUrl(String url) {
+        url = url.replace(" ", "%20");
         try {
+            System.out.println("callRawUrl: url="+url);
+
             InputStream inputStream = new URL(url).openStream();
             Scanner scanner = new Scanner(inputStream);
-            return scanner.nextLine();
+            String msg = scanner.nextLine();
+            System.out.println("callRawUrl: response: "+msg);
+            return msg;
 
         } catch (Exception e) {
             return "FAZZICLAY_ERROR:" + e;
