@@ -10,20 +10,40 @@ public class Logger {
     public static String firstStartedTime = "";
 
     public static void info(String message) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss:SSS");
-        LocalDateTime now = LocalDateTime.now();
-        String resultMessage = "["+dtf.format(now)+"] " + message;
+        String resultMessage = String.format("[%s INFO] %s", getCurrentTime(), message);
+        toConsole(resultMessage);
+        toFile(resultMessage);
+    }
 
-        System.out.println(Color.RESET + resultMessage + Color.RESET);
+    public static void error(String message) {
+        String resultMessage = Color.RED + String.format("[%s ERROR] %s", getCurrentTime(), message);
+        toConsole(resultMessage);
+        toFile(resultMessage);
+    }
+
+    public static void warn(String message) {
+        String resultMessage = Color.YELLOW + String.format("[%s WARN] %s", getCurrentTime(), message);
+        toConsole(resultMessage);
+        toFile(resultMessage);
+    }
+
+    private static String getCurrentTime() {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss:SSS"); // "yyyy/MM/dd HH:mm:ss:SSS"
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return dateTimeFormatter.format(localDateTime);
+    }
+
+    private static void toFile(String message) {
         if (onFirstStarted) {
-            DateTimeFormatter dtf_ = DateTimeFormatter.ofPattern("yyyy.MM.dd_HH:mm:ss");
-            LocalDateTime now_ = LocalDateTime.now();
-            firstStartedTime = dtf_.format(now);
+            firstStartedTime = getCurrentTime();
             onFirstStarted = false;
         }
-
         String path = "./logs/"+firstStartedTime+".txt";
-        Utils.writeFile(path, Utils.readFile(path)+"\n"+resultMessage);
+        Utils.writeFile(path, Utils.readFile(path)+"\n"+message);
+    }
+
+    private static void toConsole(String message) {
+        System.out.println(Color.RESET + message + Color.RESET);
     }
 }
 
