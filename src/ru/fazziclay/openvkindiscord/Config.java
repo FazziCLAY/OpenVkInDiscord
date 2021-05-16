@@ -11,7 +11,7 @@ public class Config {
 
     public static String discordToken;
     public static String vkToken;
-    //public static String discordGuildId;
+    public static String discordGuildId = "";
 
     public static void loadConfig() {
         Debugger debugger = new Debugger("Config", "loadConfig");

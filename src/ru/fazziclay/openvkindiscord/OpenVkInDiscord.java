@@ -3,12 +3,14 @@ package ru.fazziclay.openvkindiscord;
 import ru.fazziclay.openvkindiscord.bot.DiscordBot;
 import ru.fazziclay.openvkindiscord.bot.VkBot;
 import ru.fazziclay.openvkindiscord.console.Logger;
+import ru.fazziclay.openvkindiscord.universal.UniversalDialog;
 
 public class OpenVkInDiscord {
     public static void main(String[] args) {
         Logger.info("Starting...");
         try {
             Config.loadConfig();            // Load config
+            UniversalDialog.load();         // Load universal dialogs
             DiscordBot.loadDiscordBot();    // Load discord bot
             VkBot.loadVkBot();              // Load vk bot
 

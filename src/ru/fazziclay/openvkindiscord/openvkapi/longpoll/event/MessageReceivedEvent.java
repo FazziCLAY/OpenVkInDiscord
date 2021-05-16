@@ -3,12 +3,12 @@ package ru.fazziclay.openvkindiscord.openvkapi.longpoll.event;
 import java.util.List;
 
 public class MessageReceivedEvent extends Event {
-    int message_id;
-    int flags;
-    int peer_id;
-    int timestamp;
-    String text;
-    int random_id;
+    public int message_id;
+    public int flags;
+    public int peer_id;
+    public int timestamp;
+    public String text;
+    public int random_id;
 
     public MessageReceivedEvent(int type, int message_id, int flags, int peer_id, int timestamp, String text, int random_id) {
         super(type);

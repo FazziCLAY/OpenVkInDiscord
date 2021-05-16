@@ -1,5 +1,6 @@
 package ru.fazziclay.openvkindiscord.utils;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -9,6 +10,16 @@ import java.io.IOException;
 import java.util.Random;
 
 public class Utils {
+    public static int getDialogTypeById(int vkType) {
+        if (vkType > 2000000000) {
+            return 1;
+        } else if (vkType < 0) {
+            return 2;
+        } else {
+            return 0;
+        }
+    }
+
     public static void putIsNotExist(final JSONObject source, String key, Object value) {
         if (!source.has(key)) {
             source.put(key, value);
@@ -90,6 +101,18 @@ public class Utils {
             json = new JSONObject(fileContent);
         } catch (Exception e) {
             json = new JSONObject();
+        }
+
+        return json;
+    }
+
+    public static JSONArray readJsonArrayFile(String path) {
+        String fileContent = readFile(path);
+        JSONArray json;
+        try {
+            json = new JSONArray(fileContent);
+        } catch (Exception e) {
+            json = new JSONArray();
         }
 
         return json;
