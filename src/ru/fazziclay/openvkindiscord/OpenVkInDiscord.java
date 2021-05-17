@@ -10,13 +10,13 @@ public class OpenVkInDiscord {
         Logger.info("Starting...");
         try {
             Config.loadConfig();            // Load config
-            UniversalDialog.load();         // Load universal dialogs
+            UniversalDialog.loadInFile();   // Load universal dialogs
             DiscordBot.loadDiscordBot();    // Load discord bot
             VkBot.loadVkBot();              // Load vk bot
 
         } catch (Exception exception) {
             Logger.info("Starting error. Error: " + exception);
-            stop(1);
+            stop(9);
             return;
         }
         Logger.info("Started!");

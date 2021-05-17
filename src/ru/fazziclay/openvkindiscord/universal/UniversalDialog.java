@@ -1,78 +1,38 @@
 package ru.fazziclay.openvkindiscord.universal;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Webhook;
 import org.json.JSONArray;
 import ru.fazziclay.openvkindiscord.Config;
 import ru.fazziclay.openvkindiscord.bot.DiscordBot;
+import ru.fazziclay.openvkindiscord.bot.VkBot;
 import ru.fazziclay.openvkindiscord.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class UniversalDialog {
+    private static final String PATH_TO_FILE = "./universalDialogs.json";
+    private static final int SAVED_FILE_JSON_INDENT = 4;
+
     // Static
-    public static List<UniversalDialog> universalDialogs = new ArrayList<>();
+    public static List<UniversalDialog> universalDialogs; // List of UniversalDialog`s
 
-    public static void save() { // Сохранить universalDialogs в файл
-        JSONArray universalDialogsJson = new JSONArray();
-        universalDialogsJson.put(0);
-        for (UniversalDialog universalDialog: universalDialogs) {
-            universalDialogsJson.put(universalDialog.toJson());
-        }
-        Utils.writeFile("./universalDialogs.json", universalDialogsJson.toString(4));
-    }
+    // Получить Универсальный Диалог по id ВК
+    public static UniversalDialog getUniversalDialogByVk(int vkId) {
+        int type = Utils.getDialogTypeById(vkId);
 
-    public static void load() { // Загрузить universalDialogs из файла
-        JSONArray universalDialogsJson = new JSONArray(Utils.readJsonArrayFile("./universalDialogs.json"));
-        int version = universalDialogsJson.getInt(0);
-        if (version == 0) {
-            int i = 1;
-            while (i < universalDialogsJson.length()) {
-                JSONArray universalDialogJson = universalDialogsJson.getJSONArray(i);
-                JSONArray universalSendersJson = universalDialogJson.getJSONArray(3);
-                List<UniversalSender> universalSenders = new ArrayList<>();
-                int i1 = 0;
-                while (i1 < universalSendersJson.length()) {
-                    JSONArray universalSenderJson = universalSendersJson.getJSONArray(i1);
-                    UniversalSender universalSender = new UniversalSender(universalSenderJson.getInt(0), universalSenderJson.getString(1));
-                    universalSenders.add(universalSender);
-                    i1++;
-                }
-
-                UniversalDialog universalDialog = new UniversalDialog(universalDialogJson.getInt(0),universalDialogJson.getString(1),universalDialogJson.getInt(2), universalSenders);
-                universalDialogs.add(universalDialog);
-                i++;
-            }
-        }
-    }
-
-    public static UniversalDialog create(int vkId, String discordId, int type) { // Создать универсальный канал
-        UniversalDialog universalDialog = new UniversalDialog(vkId, discordId, type, new ArrayList<>());
-        if (discordId == null) {
-            discordId = "";
-        }
-        TextChannel textChannel = DiscordBot.discordBot.getTextChannelById(discordId);
-        if (textChannel == null) {
-            DiscordBot.discordBot.getGuildById(Config.discordGuildId).createTextChannel(String.valueOf(vkId)).queue((discord) -> {
-                universalDialog.discordId = discord.getId();
-                save();
-            });
-        }
-        universalDialogs.add(universalDialog);
-        save();
-        return universalDialog;
-    }
-
-    public static UniversalDialog getByVkId(int vkId) { // Получить универсальный канал по айди ВК
         for (UniversalDialog universalDialog : universalDialogs) {
-            if (universalDialog.vkId == vkId) {
+            if (universalDialog.vkId == Utils.convertDialogId(type, vkId)) {
                 return universalDialog;
             }
         }
         return null;
     }
 
-    public static UniversalDialog getByDiscordId(String discordId) { // Получить универсальный канал по айди Дискорд канала
+    // Получить Универсальный Диалог по id discord
+    public static UniversalDialog getUniversalDialogByDiscord(String discordId) {
         for (UniversalDialog universalDialog : universalDialogs) {
             if (universalDialog.discordId.equals(discordId)) {
                 return universalDialog;
@@ -81,29 +41,124 @@ public class UniversalDialog {
         return null;
     }
 
-    // Object
-    int       vkId;
-    String    discordId;
-    int       type;
-    List<UniversalSender> universalSenders;
+    // Загрузить в переменную universalDialogs данные из файла
+    public static void loadInFile() {
+        universalDialogs = new ArrayList<>();
 
-    public UniversalDialog(int vkId, String discordId, int type, List<UniversalSender> universalSenders) {
+        JSONArray jsonArray = new JSONArray(Utils.readJsonArrayFile(PATH_TO_FILE));
+        for (Object object : jsonArray) {
+            // Slots
+            int type = ((JSONArray)object).getInt(0);
+            int vkId = ((JSONArray)object).getInt(1);
+            String discordId = ((JSONArray)object).getString(2);
+            JSONArray universalSendersJson = ((JSONArray)object).getJSONArray(3);
+
+            // Load UniversalSender`s
+            List<UniversalSender> universalSenders = new ArrayList<>();
+            for (Object o : universalSendersJson) {
+                JSONArray universalSender = (JSONArray) o;
+                universalSenders.add(new UniversalSender(universalSender.getInt(0), universalSender.getString(1),universalSender.getString(2)));
+            }
+            // add
+            universalDialogs.add(new UniversalDialog(type, vkId, discordId, universalSenders));
+        }
+    }
+
+    // Выгрузить переменную universalDialogs в файл
+    public static void saveToFile() {
+        Utils.writeFile(PATH_TO_FILE, listToJson().toString(SAVED_FILE_JSON_INDENT));
+    }
+
+    // Конвертировать список Универсальных Диалогов в JSONArray
+    public static JSONArray listToJson() {
+        JSONArray jsonArray = new JSONArray();
+        for (UniversalDialog universalDialog : universalDialogs) {
+            JSONArray universalDialogJson = universalDialog.toJson();
+            if (universalDialogJson.get(2) != null) {
+                jsonArray.put(universalDialogJson);
+            }
+        }
+        return jsonArray;
+    }
+
+    // Создать новый Универсальный Диалог
+    public static UniversalDialog createNewUniversalDialog(int type, int vkId, String discordId) {
+        UniversalDialog universalDialog = new UniversalDialog(type, Utils.convertDialogId(type, vkId), discordId, new ArrayList<>());
+
+        if (discordId == null) {
+            Guild guild = DiscordBot.discordBot.getGuildById(Config.discordGuildId);
+            // TODO: 17.05.2021 при создании канала делать ему имя диолога а не ID
+            TextChannel createdChannel = guild.createTextChannel(String.valueOf(vkId)).complete();
+            universalDialog.discordId = createdChannel.getId();
+        }
+        universalDialogs.add(universalDialog);
+        saveToFile();
+        return universalDialog;
+    }
+
+    // Object
+    public int       type;
+    public int       vkId;
+    public String    discordId;
+    public List<UniversalSender> universalSenders;
+
+    public UniversalDialog(int type, int vkId, String discordId, List<UniversalSender> universalSenders) {
         this.vkId = vkId;
         this.discordId = discordId;
         this.type = type;
         this.universalSenders = universalSenders;
     }
 
-    public JSONArray toJson() { // Конвертировать обьект в JSONArray
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.put(vkId);            // 0
-        jsonArray.put(discordId);       // 1
-        jsonArray.put(type);            // 2
-        JSONArray universalSendersJson = jsonArray.put(new JSONArray()); // 3
-        for (UniversalSender universalSender : universalSenders) {
-            universalSendersJson.put(universalSender.toJson());
+    public UniversalSender getUniversalSenderByVkId(int vkId) {
+        for (UniversalSender universalSender : this.universalSenders) {
+            if (universalSender.vkId == vkId) {
+                return universalSender;
+            }
+        }
+        return null;
+    }
+
+    public UniversalSender createNewUniversalSender(int vkId) {
+        TextChannel textChannel = DiscordBot.discordBot.getTextChannelById(this.discordId);
+
+        Webhook createdWebhook = textChannel.createWebhook(Utils.getUserNameById(vkId)).complete();
+        UniversalSender universalSender = new UniversalSender(vkId, createdWebhook.getId(), createdWebhook.getToken());
+        this.universalSenders.add(universalSender);
+        saveToFile();
+        return universalSender;
+    }
+
+    public void discordSend(int vkSenderId, String message) {
+        UniversalSender universalSender = getUniversalSenderByVkId(vkSenderId);
+        if (universalSender == null) {
+            universalSender = createNewUniversalSender(vkSenderId);
         }
 
-        return jsonArray;
+        universalSender.sendToDiscord(message);
+    }
+
+    public void vkSend(String message) {
+        if (this.type == 0) {
+            VkBot.vkBot.sendUserMessage(this.vkId, message, 0);
+        }
+
+        if (this.type == 1) {
+            VkBot.vkBot.sendChatMessage(this.vkId, message, 0);
+        }
+    }
+    // Конвертировать объект в JSONArray
+    public JSONArray toJson() {
+        // Json objects indexes
+        // 0 - type(integer)
+        // 1 - vkId(integer)
+        // 2 - discordId(string)
+        // 3 - universalSenders
+
+        JSONArray universalSendersJson = new JSONArray();
+        for (UniversalSender universalSender : this.universalSenders) {
+            universalSendersJson.put(new JSONArray().put(universalSender.vkId).put(universalSender.discordId).put(universalSender.discordToken));
+        }
+
+        return new JSONArray().put(this.type).put(this.vkId).put(this.discordId).put(universalSendersJson);
     }
 }

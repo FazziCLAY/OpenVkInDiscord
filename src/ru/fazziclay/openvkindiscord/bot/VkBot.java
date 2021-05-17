@@ -20,10 +20,11 @@ public class VkBot extends VkEventListener {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         Debugger debugger = new Debugger("VkBot", "onMessageReceived", event.toString());
+        UniversalDialog universalDialog = UniversalDialog.getUniversalDialogByVk(event.peer_id);
 
-        UniversalDialog universalDialog = UniversalDialog.getByVkId(event.peer_id);
         if (universalDialog == null) {
-            universalDialog = UniversalDialog.create(event.peer_id, null, Utils.getDialogTypeById(event.peer_id));
+            universalDialog = UniversalDialog.createNewUniversalDialog(Utils.getDialogTypeById(event.peer_id), event.peer_id, null);
         }
+        universalDialog.discordSend(Utils.getAuthorIdByMessageId(event.message_id), event.text);
     }
 }

@@ -34,15 +34,15 @@ public class VkApi {
 
 
     // messages.send
-    public String sendUserMessage(int userId, String message) {
-        return callRawMethod("messages.send", "v=5.130&random_id="+ Utils.getRandom(0, 10000) +"&user_id="+userId+"&message="+message);
+    public String sendUserMessage(int userId, String message, int replyTo) {
+        return sendMessage("user", userId, message, replyTo);
     }
 
-    public String sendChatMessage(int chatId, String message) {
-        return callRawMethod("messages.send", "v=5.130&random_id="+ Utils.getRandom(0, 10000) +"&chat_id="+chatId+"&message="+message);
+    public String sendChatMessage(int chatId, String message, int replyTo) {
+        return sendMessage("chat", chatId, message, replyTo);
     }
 
-    public String sendMessage(String recipientType, String recipientId, String message, String replyTo) {
+    public String sendMessage(String recipientType, int recipientId, String message, int replyTo) {
         String args = String.format("v=5.130&random_id=%s&%s_id=%s&message=%s&reply_to=%s", Utils.getRandom(0, 10000), recipientType, recipientId, message.replace(" ", "%20"), replyTo);
         return callRawMethod("messages.send", args);
     }
@@ -55,14 +55,11 @@ public class VkApi {
 
     public String callRawUrl(String url) {
         url = url.replace(" ", "%20");
+        url = url.replace("\n", "\\n");
         try {
-            System.out.println("callRawUrl: url="+url);
-
             InputStream inputStream = new URL(url).openStream();
             Scanner scanner = new Scanner(inputStream);
-            String msg = scanner.nextLine();
-            System.out.println("callRawUrl: response: "+msg);
-            return msg;
+            return scanner.nextLine();
 
         } catch (Exception e) {
             return "FAZZICLAY_ERROR:" + e;

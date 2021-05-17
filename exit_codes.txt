@@ -1,2 +1,0 @@
-1 - Main Starting error!
-10 - discordToken or vkToken is empty!

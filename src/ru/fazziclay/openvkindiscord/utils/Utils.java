@@ -2,14 +2,62 @@ package ru.fazziclay.openvkindiscord.utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import ru.fazziclay.openvkindiscord.bot.VkBot;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 public class Utils {
+    public static String getUserNameById(int userId) {
+        String res = VkBot.vkBot.callRawMethod("users.get", "v=5.130&user_ids="+userId);
+        JSONObject response = new JSONObject(res).getJSONArray("response").getJSONObject(0);
+        return response.getString("first_name") + " " + response.getString("last_name");
+    }
+
+    public static HttpURLConnection httpPost(String urlAddress, String postArgs) throws IOException {
+        URL url = new URL(urlAddress);
+        HttpURLConnection http = (HttpURLConnection)url.openConnection();
+        http.setRequestMethod("POST");
+        http.setDoOutput(true);
+        http.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");;
+        http.setRequestProperty("Accept", "application/json");
+        http.setRequestProperty("Content-Type", "application/json");
+
+        OutputStream stream = http.getOutputStream();
+        stream.write(postArgs.getBytes(StandardCharsets.UTF_8));
+
+        http.disconnect();
+        return http;
+    }
+
+    public static int getAuthorIdByMessageId(int messageId) {
+        String response = VkBot.vkBot.callRawMethod("messages.getById", "v=5.130&message_ids="+messageId);
+        JSONObject responseJson = new JSONObject(response).getJSONObject("response");
+        if (responseJson.getInt("count") == 0) {
+            return -1;
+        }
+
+        return responseJson.getJSONArray("items").getJSONObject(0).getInt("from_id");
+    }
+
+    public static int convertDialogId(int dialogType, int dialogId) {
+        if (dialogType == 0) {
+            return dialogId;
+        }
+
+        if (dialogType == 1) {
+            return (dialogId-2000000000);
+        }
+
+        if (dialogType == 2) {
+            return dialogId;
+        }
+        return -1;
+    }
+
     public static int getDialogTypeById(int vkType) {
         if (vkType > 2000000000) {
             return 1;

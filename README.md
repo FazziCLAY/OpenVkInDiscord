@@ -3,6 +3,11 @@
 * Буду рад помощи в разработке. Писать https://fazziclay.ru/
 
 # Docs / Todo list (russian language)
+## Exit Codes
+* 9 - Main Starting error!
+* 10 - discordToken or vkToken is empty!
+* 11 - aborted automatically create guild.
+
 * Итак, как оно работает, или же должно работать:
 ## --- Config ---
 * У нас запускается загрузка конфига, она проверяет наличие файла config.json и если его нет, то создаёт его.
