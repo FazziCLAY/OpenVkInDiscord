@@ -1,7 +1,9 @@
 package ru.fazziclay.openvkindiscord.console;
 
+import ru.fazziclay.openvkindiscord.utils.FileUtils;
 import ru.fazziclay.openvkindiscord.utils.Utils;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -28,7 +30,7 @@ public class Logger {
     }
 
     private static String getCurrentTime() {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss:SSS"); // "yyyy/MM/dd HH:mm:ss:SSS"
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss:SSSS"); // "yyyy/MM/dd HH:mm:ss:SSS"
         LocalDateTime localDateTime = LocalDateTime.now();
         return dateTimeFormatter.format(localDateTime);
     }
@@ -39,7 +41,11 @@ public class Logger {
             onFirstStarted = false;
         }
         String path = "./logs/"+firstStartedTime+".txt";
-        Utils.writeFile(path, Utils.readFile(path)+"\n"+message);
+        try {
+            FileUtils.write(path, FileUtils.read(path)+"\n"+message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void toConsole(String message) {

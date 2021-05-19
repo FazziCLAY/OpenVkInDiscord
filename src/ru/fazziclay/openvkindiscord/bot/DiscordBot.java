@@ -2,8 +2,8 @@ package ru.fazziclay.openvkindiscord.bot;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import ru.fazziclay.openvkindiscord.Config;
 import ru.fazziclay.openvkindiscord.console.Debugger;
 import ru.fazziclay.openvkindiscord.universal.UniversalDialog;
-import ru.fazziclay.openvkindiscord.utils.Utils;
 
 import javax.security.auth.login.LoginException;
 
@@ -20,7 +19,7 @@ public class DiscordBot extends ListenerAdapter {
 
     public static void loadDiscordBot() throws LoginException, InterruptedException {
         Debugger debugger = new Debugger("DiscordBot", "loadDiscordBot");
-        discordBot = JDABuilder.createDefault(Config.discordToken)
+        discordBot = JDABuilder.createDefault(Config.authorizationDiscordToken)
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableIntents(GatewayIntent.GUILD_PRESENCES)
@@ -38,10 +37,16 @@ public class DiscordBot extends ListenerAdapter {
             debugger.log("returned! Author is bot or fake!");
             return;
         }
-        UniversalDialog universalDialog = UniversalDialog.getUniversalDialogByDiscord(event.getChannel().getId());
 
+        UniversalDialog universalDialog = UniversalDialog.getUniversalDialogByDiscord(event.getChannel().getId());
+        debugger.log("(universalDialog == null): " + (universalDialog == null));
         if (universalDialog != null) {
             universalDialog.vkSend(event.getMessage().getContentRaw());
         }
+    }
+
+    @Override
+    public void onMessageUpdate(MessageUpdateEvent event) {
+        Debugger debugger = new Debugger("DiscordBot", "onMessageUpdate", event.toString());
     }
 }

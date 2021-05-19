@@ -2,37 +2,49 @@ package ru.fazziclay.openvkindiscord;
 
 import org.json.JSONObject;
 import ru.fazziclay.openvkindiscord.console.Debugger;
-import ru.fazziclay.openvkindiscord.console.Logger;
-import ru.fazziclay.openvkindiscord.utils.Utils;
+import ru.fazziclay.openvkindiscord.utils.FileUtils;
+import ru.fazziclay.openvkindiscord.utils.JsonUtils;
 
 public class Config {
     public static JSONObject configFile;
-    public static boolean isDebugEnable = true;
 
-    public static String discordToken;
-    public static String vkToken;
+    public static String authorizationDiscordToken;
+    public static String authorizationVkToken;
+
+    public static int savableFilesJsonIndent;
+    public static String savableFilesPathToUniversalDialogs;
+    public static String savableFilesPathToUniversalMessages = "./tests/UniversalMessages.json";
+
     public static String discordGuildId;
+    public static Boolean isDebugEnable = true;
 
-    public static void loadConfig() {
+    public static void loadConfig() throws Exception {
+        String CONFIG_PATH = "./config.json";
+
         Debugger debugger = new Debugger("Config", "loadConfig");
 
-        // Config File
-        configFile = Utils.readJsonObjectFile("./config.json");
-        Utils.putIsNotExist(configFile,"discordToken", "");
-        Utils.putIsNotExist(configFile,"vkToken", "");
-        Utils.putIsNotExist(configFile,"discordGuildId", "");
-        Utils.writeFile("./config.json", configFile.toString(4));
-        debugger.log("configFile loaded!");
+        configFile = JsonUtils.readJSONObjectFile(CONFIG_PATH);
+        debugger.log("CONFIG_PATH="+CONFIG_PATH);
+        debugger.log("configFile="+configFile.toString(4));
 
-        // Variables
-        discordToken    = configFile.getString("discordToken");
-        vkToken         = configFile.getString("vkToken");
-        discordGuildId  = configFile.getString("discordGuildId");
-        debugger.log("Variables loaded!");
+        // Authorization
+        JSONObject authorization    = (JSONObject) JsonUtils.get(configFile, "authorization", new JSONObject());
+        authorizationDiscordToken   = (String) JsonUtils.get(authorization, "discordToken", "");
+        authorizationVkToken        = (String) JsonUtils.get(authorization, "vkToken", "");
 
-        if (discordToken.equals("") || vkToken.equals("") || discordGuildId.equals("")) {
-            Logger.info("Please add DiscordBot token, VkApp token and/or discordGuildId to config.json file!");
-            OpenVkInDiscord.stop(10);
-        }
+        // SavableFiles
+        JSONObject savableFiles             = (JSONObject) JsonUtils.get(configFile, "savableFiles", new JSONObject());
+        savableFilesJsonIndent              = (Integer) JsonUtils.get(savableFiles, "jsonIndent", 4);
+        savableFilesPathToUniversalDialogs  = (String) JsonUtils.get(savableFiles, "pathToUniversalDialogs", "./universalDialogs.json");
+
+        // Index
+        discordGuildId = (String) JsonUtils.get(configFile, "discordGuildId", "");
+        isDebugEnable = (Boolean) JsonUtils.get(configFile, "isDebugEnable", false);
+
+        debugger.log("Loaded!");
+        debugger.log("configFile="+configFile.toString(4));
+
+        FileUtils.write(CONFIG_PATH, configFile.toString(4));
+        debugger.log("File written!");
     }
 }

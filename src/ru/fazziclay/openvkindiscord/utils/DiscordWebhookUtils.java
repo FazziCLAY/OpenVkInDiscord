@@ -36,9 +36,6 @@ public class DiscordWebhookUtils {
         System.out.println(dataJson.toString(4));
 
         HttpURLConnection res = Utils.httpPost(url, dataJson.toString());
-        if (res.getResponseCode() == 204) {
-            return true;
-        }
-        return false;
+        return res.getResponseCode() == 204;
     }
 }

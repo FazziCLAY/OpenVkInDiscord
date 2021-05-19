@@ -4,15 +4,17 @@ import ru.fazziclay.openvkindiscord.bot.DiscordBot;
 import ru.fazziclay.openvkindiscord.bot.VkBot;
 import ru.fazziclay.openvkindiscord.console.Logger;
 import ru.fazziclay.openvkindiscord.universal.UniversalDialog;
+import ru.fazziclay.openvkindiscord.universal.UniversalMessage;
 
 public class OpenVkInDiscord {
     public static void main(String[] args) {
         Logger.info("Starting...");
         try {
-            Config.loadConfig();            // Load config
-            UniversalDialog.loadInFile();   // Load universal dialogs
-            DiscordBot.loadDiscordBot();    // Load discord bot
-            VkBot.loadVkBot();              // Load vk bot
+            Config.loadConfig();             // Load config
+            UniversalDialog.loadFromFile();  // Load universal dialogs
+            //UniversalMessage.loadFromFile(); // Load universal messages
+            DiscordBot.loadDiscordBot();     // Load discord bot
+            VkBot.loadVkBot();               // Load vk bot
 
         } catch (Exception exception) {
             Logger.info("Starting error. Error: " + exception);

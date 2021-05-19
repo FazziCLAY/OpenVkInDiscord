@@ -7,15 +7,15 @@ import org.json.JSONArray;
 import ru.fazziclay.openvkindiscord.Config;
 import ru.fazziclay.openvkindiscord.bot.DiscordBot;
 import ru.fazziclay.openvkindiscord.bot.VkBot;
+import ru.fazziclay.openvkindiscord.utils.FileUtils;
+import ru.fazziclay.openvkindiscord.utils.JsonUtils;
 import ru.fazziclay.openvkindiscord.utils.Utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UniversalDialog {
-    private static final String PATH_TO_FILE = "./universalDialogs.json";
-    private static final int SAVED_FILE_JSON_INDENT = 4;
-
     // Static
     public static List<UniversalDialog> universalDialogs; // List of UniversalDialog`s
 
@@ -42,10 +42,10 @@ public class UniversalDialog {
     }
 
     // Загрузить в переменную universalDialogs данные из файла
-    public static void loadInFile() {
+    public static void loadFromFile() {
         universalDialogs = new ArrayList<>();
 
-        JSONArray jsonArray = new JSONArray(Utils.readJsonArrayFile(PATH_TO_FILE));
+        JSONArray jsonArray = new JSONArray(JsonUtils.readJSONArrayFile(Config.savableFilesPathToUniversalDialogs));
         for (Object object : jsonArray) {
             // Slots
             int type = ((JSONArray)object).getInt(0);
@@ -66,7 +66,11 @@ public class UniversalDialog {
 
     // Выгрузить переменную universalDialogs в файл
     public static void saveToFile() {
-        Utils.writeFile(PATH_TO_FILE, listToJson().toString(SAVED_FILE_JSON_INDENT));
+        try {
+            FileUtils.write(Config.savableFilesPathToUniversalDialogs, listToJson().toString(Config.savableFilesJsonIndent));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Конвертировать список Универсальных Диалогов в JSONArray
@@ -74,9 +78,7 @@ public class UniversalDialog {
         JSONArray jsonArray = new JSONArray();
         for (UniversalDialog universalDialog : universalDialogs) {
             JSONArray universalDialogJson = universalDialog.toJson();
-            if (universalDialogJson.get(2) != null) {
-                jsonArray.put(universalDialogJson);
-            }
+            jsonArray.put(universalDialogJson);
         }
         return jsonArray;
     }
@@ -87,8 +89,15 @@ public class UniversalDialog {
 
         if (discordId == null) {
             Guild guild = DiscordBot.discordBot.getGuildById(Config.discordGuildId);
-            // TODO: 17.05.2021 при создании канала делать ему имя диолога а не ID
-            TextChannel createdChannel = guild.createTextChannel(String.valueOf(vkId)).complete();
+            // TODO: 19.05.2021 При создании канала в дискорде, если тип чат то делать имя чата
+            String channelName = null;
+            if (type == 0) {
+                channelName = Utils.getUserNameById(vkId);
+            }
+            if (channelName == null) {
+                channelName = String.valueOf(vkId);
+            }
+            TextChannel createdChannel = guild.createTextChannel(channelName).complete();
             universalDialog.discordId = createdChannel.getId();
         }
         universalDialogs.add(universalDialog);
@@ -146,6 +155,7 @@ public class UniversalDialog {
             VkBot.vkBot.sendChatMessage(this.vkId, message, 0);
         }
     }
+
     // Конвертировать объект в JSONArray
     public JSONArray toJson() {
         // Json objects indexes
