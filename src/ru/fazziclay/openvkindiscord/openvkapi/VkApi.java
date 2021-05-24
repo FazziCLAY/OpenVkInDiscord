@@ -66,7 +66,7 @@ public class VkApi {
         try {
             InputStream inputStream = new URL(url).openStream();
             Scanner scanner = new Scanner(inputStream);
-            return new String(scanner.nextLine().getBytes(StandardCharsets.UTF_8), StandardCharsets.US_ASCII);
+            return new String(scanner.nextLine().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
         } catch (Exception e) {
             return "FAZZICLAY_ERROR:" + e;

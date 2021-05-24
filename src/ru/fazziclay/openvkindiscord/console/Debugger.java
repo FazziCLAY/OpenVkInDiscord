@@ -5,6 +5,8 @@ import ru.fazziclay.openvkindiscord.Config;
 import java.util.Random;
 
 public class Debugger {
+
+
     // Static
     public static void printDebugMessage(String message) {
         if (!Config.isDebugEnable) {
@@ -36,6 +38,13 @@ public class Debugger {
         this.functionName   = functionName;
 
         printDebugMessage(String.format(Color.GREEN + "[%s:%s.%s] Called!", fileName, functionName, random));
+    }
+
+    public Debugger(String fileName) {
+        this.fileName       = fileName;
+        this.functionName   = null;
+
+        printDebugMessage(String.format(Color.GREEN + "[%s.%s] Called!", fileName, random));
     }
 
     public void log(String message) {
