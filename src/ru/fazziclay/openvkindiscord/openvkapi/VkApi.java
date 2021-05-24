@@ -1,13 +1,16 @@
 package ru.fazziclay.openvkindiscord.openvkapi;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import ru.fazziclay.openvkindiscord.console.Debugger;
 import ru.fazziclay.openvkindiscord.utils.Utils;
 import ru.fazziclay.openvkindiscord.openvkapi.longpoll.LongPollThread;
 import ru.fazziclay.openvkindiscord.openvkapi.longpoll.VkEventListener;
 
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
@@ -44,6 +47,11 @@ public class VkApi {
     }
 
     public ResponsePacket sendMessage(String recipientType, int recipientId, String message, int replyTo) {
+        try {
+            message = URLEncoder.encode(message, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String args = String.format("&v=5.130&random_id=%s&%s_id=%s&message=%s&reply_to=%s", Utils.getRandom(0, 10000), recipientType, recipientId, message, replyTo);
         return callRawMethod("messages.send", args);
     }
@@ -63,13 +71,38 @@ public class VkApi {
     public String callRawUrl(String url) {
         url = url.replace(" ", "%20");
         url = url.replace("\n", "\\n");
+        InputStream is = null;
         try {
+            is = new URL(url).openStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+            return readAll(rd);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+            /*
             InputStream inputStream = new URL(url).openStream();
             Scanner scanner = new Scanner(inputStream);
             return new String(scanner.nextLine().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+*/
+        return null;
+    }
 
-        } catch (Exception e) {
-            return "FAZZICLAY_ERROR:" + e;
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
         }
+        return sb.toString();
     }
 }
