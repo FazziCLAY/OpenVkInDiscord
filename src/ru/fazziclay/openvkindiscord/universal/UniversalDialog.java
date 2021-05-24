@@ -130,11 +130,17 @@ public class UniversalDialog {
     public UniversalSender createNewUniversalSender(int vkId) {
         TextChannel textChannel = DiscordBot.discordBot.getTextChannelById(this.discordId);
 
-        Webhook createdWebhook = textChannel.createWebhook(Utils.getUserNameById(vkId)).complete();
-        UniversalSender universalSender = new UniversalSender(vkId, createdWebhook.getId(), createdWebhook.getToken());
-        this.universalSenders.add(universalSender);
-        saveToFile();
-        return universalSender;
+        try {
+            Webhook createdWebhook = textChannel.createWebhook(Utils.getUserNameById(vkId)).complete();
+            UniversalSender universalSender = new UniversalSender(vkId, createdWebhook.getId(), createdWebhook.getToken());
+            this.universalSenders.add(universalSender);
+            saveToFile();
+
+            return universalSender;
+
+        } catch (Exception e1) {
+            return null;
+        }
     }
 
     public void discordSend(int vkSenderId, String message) {
@@ -142,8 +148,18 @@ public class UniversalDialog {
         if (universalSender == null) {
             universalSender = createNewUniversalSender(vkSenderId);
         }
-
-        universalSender.sendToDiscord(message);
+        if (universalSender == null) {
+            TextChannel a = DiscordBot.discordBot.getTextChannelById(this.discordId);
+            if (a != null) {
+                a.sendMessage(Utils.getUserNameById(vkSenderId) + ": " + message).complete();
+            }
+            return;
+        }
+        boolean b = universalSender.sendToDiscord(message);
+        if (!b) {
+            TextChannel a = DiscordBot.discordBot.getTextChannelById(this.discordId);
+            a.sendMessage(Utils.getUserNameById(vkSenderId) + ": " + message).complete();
+        }
     }
 
     public void vkSend(String message) {

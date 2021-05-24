@@ -8,6 +8,7 @@ import ru.fazziclay.openvkindiscord.openvkapi.longpoll.VkEventListener;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class VkApi {
@@ -65,7 +66,7 @@ public class VkApi {
         try {
             InputStream inputStream = new URL(url).openStream();
             Scanner scanner = new Scanner(inputStream);
-            return scanner.nextLine();
+            return new String(scanner.nextLine().getBytes(StandardCharsets.UTF_8), StandardCharsets.US_ASCII);
 
         } catch (Exception e) {
             return "FAZZICLAY_ERROR:" + e;

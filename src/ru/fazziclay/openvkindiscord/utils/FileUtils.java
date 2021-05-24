@@ -37,6 +37,7 @@ public class FileUtils {
 
 
     public static String read(String path) {
+        path = path.replace("/", File.separator);
         createNew(path);
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -70,6 +71,7 @@ public class FileUtils {
     }
 
     public static void write(String path, String content) throws IOException {
+        path = path.replace("/", File.separator);
         createNew(path);
         FileWriter fileWriter = new FileWriter(path, false);
         fileWriter.write(content);
@@ -78,7 +80,7 @@ public class FileUtils {
     }
 
     public static boolean isExist(String path) {
-        File file = new File(path);
+        File file = new File(path.replace("/", File.separator));
         return file.isFile();
     }
 }

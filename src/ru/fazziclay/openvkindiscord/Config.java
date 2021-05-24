@@ -35,7 +35,7 @@ public class Config {
         // SavableFiles
         JSONObject savableFiles             = (JSONObject) JsonUtils.get(configFile, "savableFiles", new JSONObject());
         savableFilesJsonIndent              = (Integer) JsonUtils.get(savableFiles, "jsonIndent", 4);
-        savableFilesPathToUniversalDialogs  = (String) JsonUtils.get(savableFiles, "pathToUniversalDialogs", "./universalDialogs.json");
+        savableFilesPathToUniversalDialogs  = (String) JsonUtils.get(savableFiles, "pathToUniversalDialogs", "universalDialogs.json");
 
         // Index
         discordGuildId = (String) JsonUtils.get(configFile, "discordGuildId", "");

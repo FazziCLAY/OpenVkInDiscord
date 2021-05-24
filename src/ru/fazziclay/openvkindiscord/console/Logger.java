@@ -30,7 +30,7 @@ public class Logger {
     }
 
     private static String getCurrentTime() {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss:SSSS"); // "yyyy/MM/dd HH:mm:ss:SSS"
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss"); // "yyyy/MM/dd HH:mm:ss:SSS"
         LocalDateTime localDateTime = LocalDateTime.now();
         return dateTimeFormatter.format(localDateTime);
     }
@@ -40,7 +40,7 @@ public class Logger {
             firstStartedTime = getCurrentTime();
             onFirstStarted = false;
         }
-        String path = "./logs/"+firstStartedTime+".txt";
+        String path = "logs/"+firstStartedTime+".txt";
         try {
             FileUtils.write(path, FileUtils.read(path)+"\n"+message);
         } catch (IOException e) {

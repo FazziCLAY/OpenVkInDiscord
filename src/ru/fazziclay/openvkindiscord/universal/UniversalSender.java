@@ -21,28 +21,31 @@ public class UniversalSender {
         this.discordToken = discordToken;
     }
 
-    public void sendToDiscord(String message) {
+    public boolean sendToDiscord(String message) {
         try {
-            DiscordWebhookUtils.sendWebhookMessage(discordId, discordToken, message);
+            return DiscordWebhookUtils.sendWebhookMessage(discordId, discordToken, message);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void sendToDiscord(MessageEmbed[] embeds) {
+    public boolean sendToDiscord(MessageEmbed[] embeds) {
         try {
-            DiscordWebhookUtils.sendWebhookMessage(discordId, discordToken, embeds);
+            return DiscordWebhookUtils.sendWebhookMessage(discordId, discordToken, embeds);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    public void sendToDiscord(String message, MessageEmbed[] embeds) {
+    public boolean sendToDiscord(String message, MessageEmbed[] embeds) {
         try {
-            DiscordWebhookUtils.sendWebhookMessage(discordId, discordToken, embeds, message);
+            return DiscordWebhookUtils.sendWebhookMessage(discordId, discordToken, embeds, message);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public JSONArray toJson() {

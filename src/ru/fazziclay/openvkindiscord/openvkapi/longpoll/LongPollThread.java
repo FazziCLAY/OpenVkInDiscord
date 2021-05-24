@@ -2,6 +2,7 @@ package ru.fazziclay.openvkindiscord.openvkapi.longpoll;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import ru.fazziclay.openvkindiscord.console.Debugger;
 import ru.fazziclay.openvkindiscord.openvkapi.VkApi;
 import ru.fazziclay.openvkindiscord.openvkapi.longpoll.event.Event;
 import ru.fazziclay.openvkindiscord.openvkapi.longpoll.event.MessageDeleteEvent;
@@ -14,14 +15,18 @@ public class LongPollThread extends Thread {
     public static int longPollTs;
     public static VkApi vkApi;
     public static VkEventListener eventListener;
+    public static Debugger checkDebugger = new Debugger("LongPollThread", "none");;
 
     @Override
     public void run() {
+        Debugger debugger = new Debugger("LongPollThread", "run");
         while (true) {
             try {
                 check();
                 Thread.sleep(3 * 1002);
-            } catch (InterruptedException ignored) {}
+            } catch (Exception e) {
+                debugger.error("While error: "+e);
+            }
         }
     }
 
@@ -31,9 +36,12 @@ public class LongPollThread extends Thread {
 
         if (responseJson.has("failed")) {
             int failedCode = responseJson.getInt("failed");
+            checkDebugger.error("failed from vkApi: failedCode="+failedCode);
             if (failedCode == 1) {
+                checkDebugger.log("failedCode==1: reloading ts.");
                 longPollTs = responseJson.getInt("ts");
             } else {
+                checkDebugger.log("reloading longPollServer.");
                 reloadLongPollServer();
             }
             return;
