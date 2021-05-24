@@ -41,7 +41,7 @@ public class DiscordBot extends ListenerAdapter {
         UniversalDialog universalDialog = UniversalDialog.getUniversalDialogByDiscord(event.getChannel().getId());
         debugger.log("(universalDialog == null): " + (universalDialog == null));
         if (universalDialog != null) {
-            universalDialog.vkSend(event.getMessage().getContentRaw());
+            universalDialog.vkSend(event.getMessage().getContentRaw().replace("<br>", "&lt;br&gt;"));
         }
     }
 

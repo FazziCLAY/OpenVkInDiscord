@@ -16,7 +16,7 @@ public class Config {
     public static String savableFilesPathToUniversalMessages = "./tests/UniversalMessages.json";
 
     public static String discordGuildId;
-    public static Boolean isDebugEnable = true;
+    public static Boolean isDebugEnable = false;
 
     public static void loadConfig() throws Exception {
         String CONFIG_PATH = "./config.json";
@@ -42,7 +42,7 @@ public class Config {
         isDebugEnable = (Boolean) JsonUtils.get(configFile, "isDebugEnable", false);
 
         debugger.log("Loaded!");
-        debugger.log("configFile="+configFile.toString(4));
+        //debugger.log("configFile="+configFile.toString(4));
 
         FileUtils.write(CONFIG_PATH, configFile.toString(4));
         debugger.log("File written!");

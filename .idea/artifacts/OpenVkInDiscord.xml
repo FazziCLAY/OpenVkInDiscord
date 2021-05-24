@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="OpenVkInDiscord">
+    <output-path>$PROJECT_DIR$/out/artifacts/OpenVkInDiscord</output-path>
+    <root id="archive" name="OpenVkInDiscord.jar">
+      <element id="module-output" name="OpenVkInDiscord" />
+    </root>
+  </artifact>
+</component>

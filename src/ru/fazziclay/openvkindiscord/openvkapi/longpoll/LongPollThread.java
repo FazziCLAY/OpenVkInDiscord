@@ -57,7 +57,7 @@ public class LongPollThread extends Thread {
                 int flags       = updateJson.getInt(2);
                 int peer_id     = updateJson.getInt(3);
                 int timestamp   = updateJson.getInt(4);
-                String text     = updateJson.getString(5).replace("\\n", "\n").replace("<br>", "\n");
+                String text     = updateJson.getString(5).replace("<br>", "\n");
                 int random_id   = updateJson.getInt(6);
                 eventListener.onEvent(new MessageReceivedEvent(type, message_id, flags, peer_id, timestamp, text, random_id));
 
@@ -66,7 +66,7 @@ public class LongPollThread extends Thread {
                 int flags       = updateJson.getInt(2);
                 int peer_id     = updateJson.getInt(3);
                 int timestamp   = updateJson.getInt(4);
-                String text     = updateJson.getString(5).replace("\\n", "\n").replace("<br>", "\n");
+                String text     = updateJson.getString(5).replace("<br>", "\n");
                 int random_id   = updateJson.getInt(6);
                 eventListener.onEvent(new MessageEditEvent(type, message_id, flags, peer_id, timestamp, text, random_id));
 

@@ -16,7 +16,7 @@ import java.util.Scanner;
 
 public class VkApi {
     String token;
-    Thread longPollThread;
+    public Thread longPollThread;
 
 
     public VkApi(String token) {

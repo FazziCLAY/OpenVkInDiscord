@@ -2,3 +2,4 @@ Manifest-Version: 1.0
 Main-Class: ru.fazziclay.openvkindiscord.OpenVkInDiscord
 Created-By: https://fazziclay.ru/
 Name: OpenVkInDiscord
+Class-Path: libs/json-20201115.jar libs/JDA-4.2.0_168-withDependencies.jar

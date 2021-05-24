@@ -4,10 +4,22 @@ import ru.fazziclay.openvkindiscord.bot.DiscordBot;
 import ru.fazziclay.openvkindiscord.bot.VkBot;
 import ru.fazziclay.openvkindiscord.console.Logger;
 import ru.fazziclay.openvkindiscord.universal.UniversalDialog;
-import ru.fazziclay.openvkindiscord.universal.UniversalMessage;
 
 public class OpenVkInDiscord {
     public static void main(String[] args) {
+        Logger.info("Loading libraries...");
+        try {
+            if (LibsLoader.downloadLibs()) {
+                Logger.info("Libraries downloaded! Please restart app.");
+                return;
+            }
+        } catch (Exception e) {
+            Logger.info("If there are no more files and you can't download them, find them on the Internet and put them in the 'libs' folder with the exact name as we showed above.");
+            Logger.info("Loading libraries error. STACKTRACE:");
+            e.printStackTrace();
+            return;
+        }
+        Logger.info("Libraries loaded!");
         Logger.info("Starting...");
         try {
             Config.loadConfig();             // Load config
@@ -17,7 +29,8 @@ public class OpenVkInDiscord {
             VkBot.loadVkBot();               // Load vk bot
 
         } catch (Exception exception) {
-            Logger.info("Starting error. Error: " + exception);
+            Logger.info("Starting error. STACKTRACE:");
+            exception.printStackTrace();
             stop(9);
             return;
         }
@@ -29,6 +42,12 @@ public class OpenVkInDiscord {
         try {
             DiscordBot.discordBot.shutdownNow();
         } catch (Exception ignored) {}
+
+        try {
+            VkBot.vkBot.longPollThread.stop();
+        } catch (Exception ignored) {}
+
+
         System.exit(status);
     }
 }
