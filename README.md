@@ -1,6 +1,6 @@
 # OpenVkInDiscord
 * Java app. `Vk` <---> `discord` translator.
-* Буду рад помощи в разработке. Писать https://fazziclay.ru/
+* Буду рад помощи в разработке. Писать https://fazziclay.github.io
 
 # Docs / Todo list (russian language)
 ## Exit Codes
